@@ -86,8 +86,10 @@ obvious atomic alternative - like `w`, `{`, or `%` - available.
 
 #### Other quality-of-life features
 
-* having a choice between automatically jumping to the first match (Sneak-like -
-  default) or allowing for more comfortable target labels (EasyMotion-like)
+* **smart shifting between Sneak/EasyMotion mode** - the plugin automatically
+  jumps to the first match if the remaining matches can be covered by a limited
+  set of "safe" target labels, but stays in place, and switches to an extended,
+  more comfortable label set otherwise
 * flawless **dot-repeat support** for operators (with
   [repeat.vim](https://github.com/tpope/vim-repeat) installed)
 * skips folds
@@ -291,27 +293,28 @@ introduction](#-an-in-depth-introduction-of-the-key-features) below.
 
 Lightspeed exposes a configuration table (`opts`), that can be set directly, or
 via a `setup` function that updates the current settings with the values given
-in its argument table. (Note: There is no need to call `setup` at all, if you
-are fine with the defaults.)
+in its argument table. 
+(Note: There is no need to call `setup` at all, if you are fine with the
+defaults.)
 
 ```Lua
 require'lightspeed'.setup {
-  jump_to_first_match = true,
-  jump_on_partial_input_safety_timeout = 400,
   exit_after_idle_msecs = { labeled = 1500, unlabeled = 1000 },
-  highlight_unique_chars = true,
+  -- s/x
   grey_out_search_area = true,
+  highlight_unique_chars = true,
   match_only_the_start_of_same_char_seqs = true,
-  limit_ft_matches = 4,
-  x_mode_prefix_key = '<c-x>',
+  jump_on_partial_input_safety_timeout = 400,
   substitute_chars = { ['\r'] = '¬' },
+  safe_labels = { ... },
+  labels = { ... },
+  x_mode_prefix_key = '<c-x>',
+  cycle_group_fwd_key = '<space>',
+  cycle_group_bwd_key = '<tab>',
+  -- f/t
+  limit_ft_matches = 4,
   instant_repeat_fwd_key = nil,
   instant_repeat_bwd_key = nil,
-  -- If no values are given, these will be set at runtime,
-  -- based on `jump_to_first_match`.
-  labels = nil,
-  cycle_group_fwd_key = nil,
-  cycle_group_bwd_key = nil,
 }
 ```
 
@@ -320,7 +323,7 @@ lightspeed-config`.
 
 You can also set options individually from the command line:
 ```Lua
-lua require'lightspeed'.opts.jump_to_first_match = false
+lua require'lightspeed'.opts.highlight_unique_chars = false
 ```
 
 ### Keymaps
